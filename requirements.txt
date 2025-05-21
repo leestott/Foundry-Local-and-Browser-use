@@ -1,5 +1,5 @@
 openai
 foundry-local-sdk
 browser-use
-open-webui
+flask
 # Security note: Review these pinned versions regularly and update as needed
