@@ -1,123 +1,58 @@
-# Foundry Local and Browser Use
+# Flask AI Chat with Browser Automation
 
-This repository demonstrates how to use the Foundry Local SDK with AI models for both local execution and browser-based interactions. It provides several examples of integrating local AI models with web applications and browser automation.
+This is a Flask application that provides a chat interface with an AI powered by Foundry Local, along with browser automation capabilities. The application allows users to chat with an AI model and perform web browsing tasks, capturing screenshots of the results.
 
-## Overview
+## Features
 
-This project showcases three main use cases:
-1. **Quickstart**: Simple command-line interaction with local AI models
-2. **Web Application**: Flask-based web interface for interacting with AI models
-3. **Browser Automation**: Using AI models with browser automation capabilities
-
-## Prerequisites
-
-- Python 3.8+
-- Foundry Local installed and configured
-- AI models accessible via Foundry Local (e.g., phi-3.5-mini, phi-4)
+- Chat interface with the Phi-3.5-mini model via Foundry Local
+- Browser automation using Playwright
+- Screenshot capture and display
+- Interactive UI for submitting browser automation tasks
+- Modal image viewer for screenshots
 
 ## Installation
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/Foundry-Local-and-Browser-use.git
-cd Foundry-Local-and-Browser-use
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-## Components
-
-### 1. Quickstart Example (`quickstart.py`)
-
-Demonstrates the most basic usage of Foundry Local for running AI inference:
-
-```python
-import openai
-from foundry_local import FoundryLocalManager
-
-# Initialize with your preferred model
-alias = "phi-4"
-manager = FoundryLocalManager(alias)
-
-# Connect to the local endpoint
-client = openai.OpenAI(base_url=manager.endpoint, api_key=manager.api_key)
-
-# Generate a response
-response = client.chat.completions.create(
-    model=manager.get_model_info(alias).id,
-    max_tokens=4096,
-    messages=[{"role": "user", "content": "What is the golden ratio?"}]
-)
-print(response.choices[0].message.content)
-```
-
-### 2. Web Application (`app.py`)
-
-A Flask web application that provides a chat interface for interacting with AI models:
-
-- Serves a responsive web interface
-- Processes user prompts via API endpoints
-- Returns AI-generated responses to the client
-
-To run the web application:
+1. Run the setup script to install dependencies:
 
 ```bash
-python app.py
+chmod +x setup.sh
+./setup.sh
 ```
 
-Then open your browser and navigate to `http://localhost:5000`
+This will:
+- Create a virtual environment
+- Install Python dependencies
+- Install Playwright browsers
+- Create required directories
 
-### 3. Browser Automation (`browser.py`)
+## Usage
 
-Demonstrates using AI models with browser automation to perform tasks online:
+1. Start the Flask application:
 
-```python
-import asyncio
-import openai
-from browser_use import Agent
-from foundry_local import FoundryLocalManager
-
-# Initialize with your preferred model
-alias = "phi-4"
-manager = FoundryLocalManager(alias)
-
-# Run an automated browser task
-async def main():
-    agent = Agent(
-        task="Compare the price of gpt-4o and DeepSeek-V3",
-        llm=openai.OpenAI(base_url=manager.endpoint, api_key=manager.api_key),
-    )
-    await agent.run()
-
-asyncio.run(main())
+```bash
+./run.sh
 ```
 
-## Dependencies
+2. Open your browser and navigate to `http://localhost:5000`
+3. Enable browser automation by checking the checkbox
+4. Enter a browser task (e.g., "Explore GitHub trends", "Browse Reddit for machine learning")
+5. Enter your message/question
+6. Click "Send" to submit both your message and the browser task
+7. View the results, including screenshots of the browser automation
 
-- `openai`: Client library for interacting with OpenAI-compatible APIs
-- `foundry-local-sdk`: SDK for running AI models locally via Foundry
-- `browser-use`: Library for browser automation with AI
-- `open-webui`: Web UI components
-- `Flask`: Web framework for the chat application
+## Browser Task Examples
+
+- "Go to GitHub and explore trending repositories"
+- "Browse Reddit for machine learning"
+- "Check weather forecast on Weather.gov"
+- "Find information about quantum computing on Wikipedia"
+- "Visit https://github.com"
 
 ## Project Structure
 
-```
-├── app.py              # Flask web application
-├── browser.py          # Browser automation example
-├── quickstart.py       # Basic usage example
-├── requirements.txt    # Project dependencies
-├── static/             # Static assets for the web app
-└── templates/          # HTML templates
-    └── index.html      # Main chat interface
-```
-
-## License
-
-[Specify your license here]
-
-## Acknowledgments
-
-- Foundry Local team for providing the local AI execution environment
-- Browser Use library developers
+- `app.py`: Main Flask application
+- `templates/`: HTML templates for the web interface
+- `static/screenshots/`: Directory for storing screenshots
+- `run.sh`: Script to run the application
+- `setup.sh`: Script to set up the environment
+- `requirements.txt`: List of Python dependencies

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Automation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        .back-button {
+            text-decoration: none;
+            color: #3498db;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        .back-button:hover {
+            color: #2980b9;
+        }
+        .instructions {
+            background-color: #ebf7fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .example-button {
+            background-color: #e3f2fd;
+            border: 1px solid #3498db;
+            color: #2980b9;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .example-button:hover {
+            background-color: #d0e8fa;
+        }
+        #browser-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        #browserTask {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .loading-dots {
+            display: inline-block;
+        }
+        .loading-dots:after {
+            content: '...';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        #screenshots-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .screenshot-item {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .screenshot-header {
+            background-color: #f5f5f5;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e1e4e8;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .screenshot-image {
+            width: 100%;
+            border-bottom: 1px solid #e1e4e8;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Browser Automation</h1>
+        <a href="/" class="back-button">← Back to Home</a>
+    </div>
+    
+    <div class="instructions">
+        <h3>How to use:</h3>
+        <p>Enter a description of what web task you want to automate. The AI will navigate websites, take screenshots, and return the results to you.</p>
+        
+        <div>
+            <h4>Example tasks:</h4>
+            <div class="examples">
+                <button class="example-button" onclick="fillExample('Go to GitHub and explore trending repositories')">Explore GitHub trends</button>
+                <button class="example-button" onclick="fillExample('Go to Reddit and check top posts')">Check Reddit top posts</button>
+                <button class="example-button" onclick="fillExample('Check weather forecast on Weather.gov')">Check weather forecast</button>
+                <button class="example-button" onclick="fillExample('Find information about quantum physics on Wikipedia')">Wikipedia research</button>
+            </div>
+        </div>
+    </div>
+    
+    <form id="browser-form">
+        <input type="text" id="browserTask" placeholder="Describe what you want the browser to do..." required autofocus>
+        <button type="submit">Run Task</button>
+    </form>
+    
+    <div id="loading" class="loading" style="display: none;">
+        <p>Browser automation in progress<span class="loading-dots"></span><br>
+        <small>(This may take several seconds)</small></p>
+    </div>
+    
+    <div id="screenshots-container"></div>
+    
+    <script>
+        function fillExample(text) {
+            document.getElementById('browserTask').value = text;
+        }
+        
+        document.getElementById('browser-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const browserTaskInput = document.getElementById('browserTask');
+            const browserTask = browserTaskInput.value;
+            
+            if (!browserTask.trim()) return;
+            
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'block';
+            
+            // Clear previous screenshots
+            document.getElementById('screenshots-container').innerHTML = '';
+            
+            try {
+                // Send to backend
+                const response = await fetch('/automate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ browserTask })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+                
+                if (response.ok) {
+                    // Display screenshots
+                    const container = document.getElementById('screenshots-container');
+                    
+                    // First, display a header for the task
+                    const taskHeader = document.createElement('h2');
+                    taskHeader.textContent = `Results: ${browserTask}`;
+                    container.appendChild(taskHeader);
+                    
+                    // Then display each screenshot
+                    data.screenshots.forEach((screenshot, index) => {
+                        const screenshotItem = document.createElement('div');
+                        screenshotItem.className = 'screenshot-item';
+                        
+                        const header = document.createElement('div');
+                        header.className = 'screenshot-header';
+                        header.textContent = screenshot.description;
+                        screenshotItem.appendChild(header);
+                        
+                        const img = document.createElement('img');
+                        img.src = `data:image/png;base64,${screenshot.data}`;
+                        img.className = 'screenshot-image';
+                        img.alt = `Screenshot ${index + 1}`;
+                        screenshotItem.appendChild(img);
+                        
+                        container.appendChild(screenshotItem);
+                    });
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to complete browser automation'));
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                alert('Error: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

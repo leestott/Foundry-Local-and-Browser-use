@@ -1,5 +1,8 @@
+Flask
+playwright
+python-dotenv
 openai
 foundry-local-sdk
-browser-use
-flask
-# Security note: Review these pinned versions regularly and update as needed
+asyncio
+pillow
+uuid
