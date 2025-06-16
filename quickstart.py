@@ -2,7 +2,7 @@ import openai
 from foundry_local import FoundryLocalManager
 
 # Use an alias to select the most suitable model
-alias = "phi-4"
+alias = "phi-3.5-mini"
 
 # Start Foundry Local and load the model
 manager = FoundryLocalManager(alias)
