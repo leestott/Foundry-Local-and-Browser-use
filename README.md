@@ -1,14 +1,38 @@
-# Flask AI Chat with Browser Automation
+# AI-Powered Browser Automation with Intelligent Planning
 
-This is a Flask application that provides a chat interface with an AI powered by Foundry Local, along with browser automation capabilities. The application allows users to chat with an AI model and perform web browsing tasks, capturing screenshots of the results.
+This is a Flask application that provides an advanced chat interface with AI-powered browser automation. The system uses local AI models via Foundry Local to intelligently plan and execute web browsing tasks with sophisticated CAPTCHA detection and step-by-step reasoning.
 
-## Features
+## 🚀 Key Features
 
-- Chat interface with the Phi-3.5-mini model via Foundry Local
-- Browser automation using Playwright
-- Screenshot capture and display
-- Interactive UI for submitting browser automation tasks
-- Modal image viewer for screenshots
+### 🧠 AI-Powered Automation
+- **Dynamic Task Planning**: AI analyzes tasks and creates custom step-by-step plans
+- **Intelligent Action Generation**: AI determines the best browser actions based on page context
+- **Adaptive Execution**: Real-time decision making that adapts to different websites
+- **Context-Aware Navigation**: Understands page content to make smart choices
+
+### 🛡️ Advanced CAPTCHA Protection
+- **Multi-Pattern Detection**: Detects various CAPTCHA types (reCAPTCHA, hCAPTCHA, Cloudflare, etc.)
+- **Smart Evasion**: Automatically navigates to alternative sites when CAPTCHAs are encountered
+- **Keyword Analysis**: Text-based CAPTCHA detection for comprehensive coverage
+- **Seamless Fallbacks**: Continues automation on privacy-focused alternatives
+
+### 🎯 Goal-Oriented Execution
+- **Step-by-Step Breakdown**: Complex tasks divided into manageable steps
+- **Real-Time Logging**: Detailed progress tracking with emojis and clear status updates
+- **Error Recovery**: Graceful handling of failures with continued execution
+- **Screenshot Documentation**: Before/after screenshots for each step
+
+### 🔒 Privacy-Focused Approach
+- **No Google/Amazon**: Automatically redirects to privacy-friendly alternatives
+- **DuckDuckGo Integration**: Default search engine for better privacy
+- **eBay over Amazon**: Alternative marketplace for shopping tasks
+- **Enhanced Security**: Multiple CAPTCHA detection layers
+
+### 📸 Enhanced Screenshot System
+- **Intelligent Capture**: Screenshots at key decision points
+- **Step Documentation**: Visual proof of each automation step
+- **Modal Viewer**: Interactive image viewing in the web interface
+- **Organized Storage**: Timestamped and categorized screenshot management
 
 ## Installation
 
@@ -47,12 +71,7 @@ This is a Flask application that provides a chat interface with an AI powered by
    pip install -r requirements.txt
    ```
 
-6. Install Playwright browsers:
-   ```
-   playwright install
-   ```
-
-7. Create the screenshots directory if it doesn't exist:
+6. Create the screenshots directory if it doesn't exist:
    ```
    mkdir -p static\screenshots
    ```
@@ -85,28 +104,9 @@ This is a Flask application that provides a chat interface with an AI powered by
    pip install -r requirements.txt
    ```
 
-6. Install Playwright browsers:
-   ```bash
-   playwright install
-   ```
-
-7. Create the screenshots directory if it doesn't exist:
+6. Create the screenshots directory if it doesn't exist:
    ```bash
    mkdir -p static/screenshots
-   ```
-
-### Alternative: Using Setup Script (Linux only)
-
-If you're on Linux, you can use the provided setup script:
-
-1. Make the script executable:
-   ```bash
-   chmod +x setup.sh
-   ```
-
-2. Run the setup script:
-   ```bash
-   ./setup.sh
    ```
 
 ## Running the Application
@@ -137,10 +137,6 @@ If you're on Linux, you can use the provided setup script:
    python app.py
    ```
    
-   Or use the run script if available:
-   ```bash
-   ./run.sh
-   ```
 
 3. Open your browser and navigate to `http://localhost:5000`
 
@@ -154,13 +150,65 @@ If you're on Linux, you can use the provided setup script:
    - Click "Send" to submit both your message and the browser task
    - View the results, including screenshots of the browser automation
 
-## Browser Task Examples
+## 📋 How It Works
 
-- "Go to GitHub and explore trending repositories"
-- "Browse Reddit for machine learning"
-- "Check weather forecast on Weather.gov"
-- "Find information about quantum computing on Wikipedia"
-- "Visit https://github.com"
+### 1. AI Task Analysis
+When you submit a task, the AI:
+- Analyzes the request to understand the goal
+- Creates a detailed step-by-step execution plan
+- Considers potential obstacles and alternative approaches
+- Generates 4-8 specific, actionable steps
+
+### 2. Intelligent Execution
+For each step, the AI:
+- Examines the current page context (URL, title, content)
+- Determines the optimal browser action (navigate, click, fill, etc.)
+- Executes the action with appropriate timing and error handling
+- Adapts to unexpected page layouts or elements
+
+### 3. CAPTCHA Protection
+The system automatically:
+- Scans for multiple CAPTCHA patterns and keywords
+- Takes screenshots when CAPTCHAs are detected
+- Navigates to privacy-focused alternative sites
+- Continues the task flow seamlessly
+
+### 4. Action Types
+The AI can execute these browser actions:
+- `NAVIGATE`: Go to specific URLs
+- `FILL`: Enter text in input fields
+- `CLICK`: Click on page elements
+- `PRESS`: Use keyboard shortcuts
+- `SCROLL`: Navigate page content
+- `WAIT`: Pause for loading/timing
+- `EXTRACT`: Gather text information
+- `SCREENSHOT`: Document progress
+
+## 🎯 Example AI Workflows
+
+### Search Task: "Find information about electric cars"
+```
+📋 AI GENERATED TASK PLAN:
+   1. Navigate to a reliable search engine
+   2. Enter search query for electric vehicle information
+   3. Submit the search and wait for results
+   4. Click on the most informative result
+   5. Read through the article content
+   6. Scroll to gather additional details
+   7. Verify information quality and completeness
+```
+
+### Shopping Task: "Find laptops under $1000"
+```
+📋 AI GENERATED TASK PLAN:
+   1. Navigate to eBay marketplace
+   2. Enter search criteria for affordable laptops
+   3. Apply price filters and sorting options
+   4. Browse through relevant product listings
+   5. Click on highly-rated products
+   6. Compare specifications and pricing
+   7. Document findings for decision making
+```
 
 ## Project Structure
 
@@ -169,33 +217,94 @@ If you're on Linux, you can use the provided setup script:
 - `static/screenshots/`: Directory for storing screenshots
 - `requirements.txt`: List of Python dependencies
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
-### Windows
+### Common Issues
 
-- If you encounter issues with Playwright, try running:
-  ```
-  playwright install-deps
-  ```
+**AI Planning Failures**
+- Ensure Foundry Local is running and accessible
+- Check that the Phi-3.5-mini model is properly loaded
+- Verify network connectivity for local model inference
 
-- If you get permission errors when creating directories, run your command prompt or PowerShell as administrator.
+**Browser Automation Issues**
+- Run `playwright install` to ensure browsers are installed
+- Check that the display is available (not running headless improperly)
+- Verify sufficient disk space for screenshots
 
-### Linux
+**CAPTCHA Problems**
+- CAPTCHAs are automatically handled with alternative sites
+- If persistent issues occur, the system will log detailed error messages
+- Check console output for specific CAPTCHA detection patterns
 
-- If you encounter issues with Playwright, ensure you have the necessary dependencies:
-  ```bash
-  sudo apt update
-  sudo apt install -y libgbm-dev libxkbcommon-x11-0 libgtk-3-0 libasound2
-  playwright install-deps
-  ```
+**Screenshot Issues**
+- Ensure `static/screenshots/` directory exists and is writable
+- Screenshots are automatically git-ignored
+- Check available disk space for image storage
 
-- If you get permission errors, check your file permissions:
-  ```bash
-  chmod -R 755 .
-  ```
 
-## Notes
+### Performance Optimization
 
-- The application uses the Phi-3.5-mini model via Foundry Local
-- Browser automation runs with visible browser windows (headless=False)
-- Screenshots are stored in the `static/screenshots` directory
+**Speed Adjustments**
+- Modify timing delays in `execute_ai_generated_step` for faster/slower execution
+- Adjust AI token limits for quicker planning (may reduce plan quality)
+- Use headless mode for faster automation (modify `headless=False` to `headless=True`)
+
+**Resource Management**
+- Screenshots are automatically cleaned up by session
+- Monitor disk usage in `static/screenshots/` directory
+- Consider implementing screenshot rotation for long-running instances
+
+## 📊 Monitoring and Logs
+
+The system provides extensive logging:
+- **🧠 AI Analysis**: Task planning and reasoning
+- **📋 Generated Plans**: Step-by-step execution plans
+- **🎯 Step Execution**: Real-time progress updates
+- **🤖 AI Actions**: Specific browser actions taken
+- **🛡️ CAPTCHA Detection**: Security measure notifications
+- **✅ Completion Status**: Success/failure indicators
+- **📸 Screenshot Tracking**: Image capture confirmations
+
+## 📝 Notes
+
+### AI Model Configuration
+- Uses Phi-3.5-mini model via Foundry Local for intelligent planning
+- Local inference ensures privacy and no external API dependencies
+- Model can be switched by modifying the `alias` variable in `app.py`
+
+### Browser Behavior
+- Runs with visible browser windows (`headless=False`) for transparency
+- Implements smart timing delays for reliable automation
+- Automatically handles dynamic content loading and page transitions
+
+### Privacy and Security
+- No data sent to external services (fully local AI processing)
+- Avoids Google and Amazon by default for enhanced privacy
+- CAPTCHA protection prevents bot detection and blocking
+- All screenshots stored locally and git-ignored
+
+### Screenshot Management
+- Images stored in `static/screenshots/` with session-based organization
+- Automatic before/after documentation for debugging
+- Files automatically excluded from Git tracking
+- Consider periodic cleanup for disk space management
+
+### Customization Options
+- Modify AI prompts in planning functions for different behavior
+- Adjust timing delays for speed vs. reliability trade-offs
+- Customize CAPTCHA detection patterns for specific sites
+- Add new action types for specialized automation needs
+
+---
+
+## 🚀 Recent Updates
+
+**v2.0 - AI-Powered Intelligence**
+- ✅ Dynamic AI task planning and execution
+- ✅ Intelligent action generation based on page context
+- ✅ Advanced CAPTCHA detection and evasion
+- ✅ Step-by-step execution with detailed logging
+- ✅ Privacy-focused site alternatives (DuckDuckGo, eBay)
+- ✅ Enhanced screenshot management with Git ignore
+- ✅ Real-time progress tracking and error recovery
+- ✅ Context-aware browser automation

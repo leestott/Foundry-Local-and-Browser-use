@@ -1,8 +1,4 @@
 Flask
 playwright
-python-dotenv
 openai
 foundry-local-sdk
-asyncio
-pillow
-uuid
