@@ -17,7 +17,7 @@ app = Flask(__name__)
 # Store instances of the manager and client for reuse
 manager = None
 client = None
-alias = "phi-3.5-mini"  # Default model alias
+alias = "phi-4"  # Default model alias
 
 def get_openai_client():
     """Initialize the OpenAI client if needed and return it."""
@@ -130,7 +130,7 @@ async def generate_task_plan_with_ai(task):
     Task: "{task}"
 
     Consider these guidelines:
-    - Break the task into 4-8 clear, actionable steps
+    - Break the task into 4 to a maximum of 8 clear, actionable steps
     - Each step should be specific and measurable
     - Consider potential obstacles like CAPTCHAs, slow loading, or missing elements
     - Prefer privacy-focused alternatives (DuckDuckGo over Google, eBay over Amazon)

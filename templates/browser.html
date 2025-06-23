@@ -103,6 +103,28 @@
             40% { content: '..'; }
             60%, 100% { content: '...'; }
         }
+        .features {
+            margin-top: 15px;
+        }
+        .features ul {
+            margin: 10px 0;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #856404;
+        }
+        .suggestion-box {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #0c5460;
+        }
         #screenshots-container {
             display: flex;
             flex-direction: column;
@@ -125,6 +147,20 @@
         .screenshot-image {
             width: 100%;
             border-bottom: 1px solid #e1e4e8;
+            max-height: 400px;
+            object-fit: contain;
+            background-color: #f8f9fa;
+        }
+        .screenshot-text {
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            color: #2c3e50;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
         }
     </style>
 </head>
@@ -135,17 +171,19 @@
     </div>
     
     <div class="instructions">
-        <h3>How to use:</h3>
-        <p>Enter a description of what web task you want to automate. The AI will navigate websites, take screenshots, and return the results to you.</p>
+        <h3>AI-Powered Browser Automation</h3>
+        <p>Enter a description of what web task you want to automate. The AI will intelligently plan the steps, navigate websites, avoid CAPTCHAs, and return visual results.</p>
         
-        <div>
-            <h4>Example tasks:</h4>
-            <div class="examples">
-                <button class="example-button" onclick="fillExample('Go to GitHub and explore trending repositories')">Explore GitHub trends</button>
-                <button class="example-button" onclick="fillExample('Go to Reddit and check top posts')">Check Reddit top posts</button>
-                <button class="example-button" onclick="fillExample('Check weather forecast on Weather.gov')">Check weather forecast</button>
-                <button class="example-button" onclick="fillExample('Find information about quantum physics on Wikipedia')">Wikipedia research</button>
+        <div id="demo-tasks-section">
+            <h4> Recommended Demo Tasks:</h4>
+            <div id="demo-tasks-container" class="examples">
+                <button class="example-button" onclick="fillExample('Search for Python programming tutorials')">Python tutorials</button>
+                <button class="example-button" onclick="fillExample('Find information about artificial intelligence on Wikipedia')">AI on Wikipedia</button>
+                <button class="example-button" onclick="fillExample('Browse Reddit for technology discussions')">Reddit tech</button>
+                <button class="example-button" onclick="fillExample('Look up news about renewable energy')">Energy news</button>
+                <button class="example-button" onclick="fillExample('Search for cooking recipes')">Cooking recipes</button>
             </div>
+            <p><small>These tasks are optimized for demo reliability and CAPTCHA avoidance</small></p>
         </div>
     </div>
     
@@ -162,6 +200,30 @@
     <div id="screenshots-container"></div>
     
     <script>
+        // Load demo tasks dynamically on page load
+        async function loadDemoTasks() {
+            try {
+                const response = await fetch('/demo-tasks');
+                if (response.ok) {
+                    const data = await response.json();
+                    const container = document.getElementById('demo-tasks-container');
+                    container.innerHTML = ''; // Clear existing buttons
+                    
+                    data.tasks.forEach(task => {
+                        const button = document.createElement('button');
+                        button.className = 'example-button';
+                        button.onclick = () => fillExample(task);
+                        // Create a short label from the task
+                        button.textContent = task.length > 25 ? task.substring(0, 25) + '...' : task;
+                        button.title = task; // Full text on hover
+                        container.appendChild(button);
+                    });
+                }
+            } catch (error) {
+                console.log('Could not load demo tasks:', error);
+            }
+        }
+        
         function fillExample(text) {
             document.getElementById('browserTask').value = text;
         }
@@ -177,8 +239,12 @@
             // Show loading indicator
             document.getElementById('loading').style.display = 'block';
             
-            // Clear previous screenshots
+            // Clear previous screenshots and warnings
             document.getElementById('screenshots-container').innerHTML = '';
+            
+            // Remove any existing warnings
+            const existingWarnings = document.querySelectorAll('.warning-box, .suggestion-box');
+            existingWarnings.forEach(warning => warning.remove());
             
             try {
                 // Send to backend
@@ -196,40 +262,110 @@
                 document.getElementById('loading').style.display = 'none';
                 
                 if (response.ok) {
-                    // Display screenshots
-                    const container = document.getElementById('screenshots-container');
+                    // Check if there's a warning or suggestion
+                    if (data.warning || data.suggestion) {
+                        const warningBox = document.createElement('div');
+                        warningBox.className = data.warning ? 'warning-box' : 'suggestion-box';
+                        
+                        let content = '';
+                        if (data.warning) content += `⚠️ ${data.warning}<br>`;
+                        if (data.suggestion) content += `💡 ${data.suggestion}`;
+                        
+                        warningBox.innerHTML = content;
+                        
+                        // Add demo tasks if provided
+                        if (data.demo_tasks) {
+                            content += '<br><strong>Try these instead:</strong><br>';
+                            data.demo_tasks.forEach(task => {
+                                content += `• ${task}<br>`;
+                            });
+                            warningBox.innerHTML = content;
+                        }
+                        
+                        // Insert warning before the form
+                        const form = document.getElementById('browser-form');
+                        form.parentNode.insertBefore(warningBox, form);
+                        return;
+                    }
                     
-                    // First, display a header for the task
-                    const taskHeader = document.createElement('h2');
-                    taskHeader.textContent = `Results: ${browserTask}`;
-                    container.appendChild(taskHeader);
-                    
-                    // Then display each screenshot
-                    data.screenshots.forEach((screenshot, index) => {
-                        const screenshotItem = document.createElement('div');
-                        screenshotItem.className = 'screenshot-item';
+                    // Display screenshots if automation completed
+                    if (data.screenshots) {
+                        const container = document.getElementById('screenshots-container');
                         
-                        const header = document.createElement('div');
-                        header.className = 'screenshot-header';
-                        header.textContent = screenshot.description;
-                        screenshotItem.appendChild(header);
+                        // First, display a header for the task
+                        const taskHeader = document.createElement('h2');
+                        taskHeader.textContent = `✅ Results: ${browserTask}`;
+                        taskHeader.style.color = '#27ae60';
+                        container.appendChild(taskHeader);
                         
-                        const img = document.createElement('img');
-                        img.src = `data:image/png;base64,${screenshot.data}`;
-                        img.className = 'screenshot-image';
-                        img.alt = `Screenshot ${index + 1}`;
-                        screenshotItem.appendChild(img);
-                        
-                        container.appendChild(screenshotItem);
-                    });
+                        // Then display each screenshot
+                        data.screenshots.forEach((screenshot, index) => {
+                            const screenshotItem = document.createElement('div');
+                            screenshotItem.className = 'screenshot-item';
+                            
+                            const header = document.createElement('div');
+                            header.className = 'screenshot-header';
+                            header.textContent = screenshot.description;
+                            screenshotItem.appendChild(header);
+                            
+                            // Check if this is an image or text data
+                            try {
+                                const decodedData = atob(screenshot.data);
+                                if (decodedData.startsWith('===') || decodedData.includes('Generated:')) {
+                                    // This is text data, display as formatted text
+                                    const textDiv = document.createElement('div');
+                                    textDiv.className = 'screenshot-text';
+                                    textDiv.textContent = decodedData;
+                                    screenshotItem.appendChild(textDiv);
+                                } else {
+                                    // This might be actual image data
+                                    const img = document.createElement('img');
+                                    img.src = `data:image/png;base64,${screenshot.data}`;
+                                    img.className = 'screenshot-image';
+                                    img.alt = `Screenshot ${index + 1}`;
+                                    img.style.cursor = 'pointer';
+                                    
+                                    // Add click handler to open image in new tab
+                                    img.onclick = () => {
+                                        const newWindow = window.open();
+                                        newWindow.document.write(`<img src="${img.src}" style="max-width:100%;height:auto;">`);
+                                    };
+                                    
+                                    screenshotItem.appendChild(img);
+                                }
+                            } catch (e) {
+                                // Fallback to text display
+                                const textDiv = document.createElement('div');
+                                textDiv.className = 'screenshot-text';
+                                textDiv.textContent = screenshot.data;
+                                screenshotItem.appendChild(textDiv);
+                            }
+                            
+                            container.appendChild(screenshotItem);
+                        });
+                    }
                 } else {
-                    alert('Error: ' + (data.error || 'Failed to complete browser automation'));
+                    const errorBox = document.createElement('div');
+                    errorBox.className = 'warning-box';
+                    errorBox.innerHTML = `❌ Error: ${data.error || 'Failed to complete browser automation'}`;
+                    
+                    const form = document.getElementById('browser-form');
+                    form.parentNode.insertBefore(errorBox, form);
                 }
             } catch (error) {
                 document.getElementById('loading').style.display = 'none';
-                alert('Error: ' + error.message);
+                
+                const errorBox = document.createElement('div');
+                errorBox.className = 'warning-box';
+                errorBox.innerHTML = `❌ Network Error: ${error.message}`;
+                
+                const form = document.getElementById('browser-form');
+                form.parentNode.insertBefore(errorBox, form);
             }
         });
+        
+        // Load demo tasks when page loads
+        document.addEventListener('DOMContentLoaded', loadDemoTasks);
     </script>
 </body>
 </html>

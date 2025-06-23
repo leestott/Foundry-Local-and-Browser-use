@@ -2,3 +2,4 @@ Flask
 playwright
 openai
 foundry-local-sdk
+requests
